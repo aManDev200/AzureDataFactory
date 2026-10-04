@@ -1,0 +1,6 @@
+{
+	"name": "AmanSeLFHosted",
+	"properties": {
+		"type": "SelfHosted"
+	}
+}

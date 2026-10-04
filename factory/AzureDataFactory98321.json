@@ -1,0 +1,15 @@
+{
+	"name": "AzureDataFactory98321",
+	"properties": {
+		"trustModeClaimForMi": {
+			"value": "Disabled",
+			"editable": true
+		}
+	},
+	"location": "southeastasia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "5ff38680-b3a1-4c0d-b330-aff93028a080",
+		"tenantId": "143057b1-bf03-4a8b-a8c1-f9fbb5450602"
+	}
+}

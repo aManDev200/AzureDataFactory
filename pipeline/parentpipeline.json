@@ -1,0 +1,124 @@
+{
+	"name": "parentpipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "ExecuteonPrem",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "onpremingestion",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"files": {
+							"value": "@pipeline().parameters.files",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "ExecuteApiPipeline",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "ExecuteonPrem",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "ApiIngestionDatalake",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "executesqlpipeline",
+				"type": "ExecutePipeline",
+				"state": "Active",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [
+					{
+						"activity": "ExecuteApiPipeline",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "SQLINGESTION",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "failurelogicapp",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "executesqlpipeline",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"method": "POST",
+					"url": "https://prod-11.westindia.logic.azure.com:443/workflows/b37e1143d68549e6b59c8eca0ca74842/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=WGKjKdCzeHj7r-iivgl0LgYpt6O54hV-36z56ce8qbk",
+					"body": {
+						"value": "{   \n    \"pipeline_name\": \"@{pipeline().Pipeline}\",\n    \"run_id\":\"@{pipeline().RunId}\",\n    \"status\" : \"@{activity('executesqlpipeline').Status}\",\n    \"error\" : \"@{if(equals(activity('executesqlpipeline').Status, 'Failed'), string(activity('executesqlpipeline').error), 'No error')}\"\n}\n",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"files": {
+				"type": "array",
+				"defaultValue": [
+					{
+						"filename": "DimPassenger.csv"
+					},
+					{
+						"filename": "DimAirline.csv"
+					},
+					{
+						"filename": "DimFlight.csv"
+					}
+				]
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2026-10-04T13:57:47Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

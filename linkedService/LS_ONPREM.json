@@ -1,0 +1,17 @@
+{
+	"name": "LS_ONPREM",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "FileServer",
+		"typeProperties": {
+			"host": "D:\\AzureDataFactory\\AnshLambaYoutube\\ADF_Project",
+			"userId": "aman\\fakex",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiJlZjkwMjBiZS1jMjRmLTQ1MjMtODUyZC1lN2QzZjI5YzZlMWYiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "AmanSeLFHosted",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}
